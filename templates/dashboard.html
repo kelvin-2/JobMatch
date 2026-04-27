@@ -1,10 +1,188 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard — JobMatch</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary-container": "#947dff", "outline-variant": "#484555",
+          "on-secondary-fixed-variant": "#005321", "surface-container-high": "#272a34",
+          "surface-container-lowest": "#0b0e17", "surface-container-low": "#181b25",
+          "on-primary-fixed-variant": "#4918c8", "secondary-fixed": "#6bff8f",
+          "outline": "#938ea1", "on-surface-variant": "#c9c4d8",
+          "surface-dim": "#10131d", "surface": "#10131d", "on-primary": "#32009a",
+          "on-surface": "#e0e2f0", "primary": "#cabeff",
+          "on-primary-container": "#2b0088", "secondary-fixed-dim": "#4ae176",
+          "error-container": "#93000a", "surface-container": "#1c1f29",
+          "on-background": "#e0e2f0", "on-secondary": "#003915",
+          "primary-fixed": "#e6deff", "surface-container-highest": "#31343f",
+          "secondary": "#4ae176", "surface-bright": "#363944",
+          "error": "#ffb4ab", "secondary-container": "#00b954",
+          "on-secondary-fixed": "#002109", "surface-variant": "#31343f",
+          "tertiary": "#ffb3ad", "tertiary-container": "#ff5451",
+        },
+        fontFamily: { "headline": ["Plus Jakarta Sans"], "label": ["Inter"] }
+      }
+    }
+  }
+</script>
+<style>
+  body { background-color: #10131d; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #31343f; border-radius: 10px; }
+</style>
 </head>
-<body>
+<body class="text-on-surface antialiased">
 
+{% set active = 'dashboard' %}
+{% include '_sidebar.html' %}
+
+<!-- Top bar -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 bg-[#10131d]/80 backdrop-blur-xl h-20 flex justify-between items-center px-8">
+  <h2 class="text-lg font-semibold text-on-surface">Overview</h2>
+  <div class="flex items-center gap-2">
+    <form method="POST" action="{{ url_for('run_scraper') }}">
+      <button type="submit" class="flex items-center gap-2 bg-secondary-container/10 text-secondary border border-secondary/20 px-4 py-2 rounded-full text-sm font-semibold hover:bg-secondary-container/20 transition-all">
+        <span class="material-symbols-outlined text-sm">sync</span> Refresh Feed
+      </button>
+    </form>
+  </div>
+</header>
+
+<!-- Main -->
+<main class="ml-64 pt-20 h-screen overflow-y-auto custom-scrollbar">
+  <div class="max-w-4xl mx-auto p-8">
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="mb-4 px-4 py-3 bg-secondary/10 border border-secondary/20 text-secondary rounded-xl text-sm">
+          {{ messages[0] }}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Greeting -->
+    <section class="mb-8">
+      <h1 class="text-4xl font-extrabold tracking-tight text-on-surface mb-1">Morning Kelvin,</h1>
+      <p class="text-on-surface-variant text-lg">here's what dropped today.</p>
+    </section>
+
+    <!-- Stat chips -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+      <div class="bg-surface-container rounded-xl p-5 flex flex-col gap-1 hover:bg-surface-container-high border border-transparent hover:border-primary/10 transition-all">
+        <span class="text-xs font-label font-medium text-on-surface-variant uppercase tracking-wider">Total Scraped</span>
+        <span class="text-2xl font-extrabold text-on-surface">{{ stats.total_scraped }}</span>
+      </div>
+      <div class="bg-surface-container rounded-xl p-5 flex flex-col gap-1 hover:bg-surface-container-high border border-transparent hover:border-primary/10 transition-all">
+        <span class="text-xs font-label font-medium text-on-surface-variant uppercase tracking-wider">New Today</span>
+        <span class="text-2xl font-extrabold text-on-surface">{{ stats.new }}</span>
+      </div>
+      <div class="bg-surface-container rounded-xl p-5 flex flex-col gap-1 hover:bg-surface-container-high border border-transparent hover:border-primary/10 transition-all">
+        <span class="text-xs font-label font-medium text-on-surface-variant uppercase tracking-wider">Saved</span>
+        <span class="text-2xl font-extrabold text-tertiary-container">{{ stats.saved }}</span>
+      </div>
+      <div class="bg-surface-container rounded-xl p-5 flex flex-col gap-1 hover:bg-surface-container-high border border-transparent hover:border-primary/10 transition-all">
+        <span class="text-xs font-label font-medium text-on-surface-variant uppercase tracking-wider">Applied</span>
+        <span class="text-2xl font-extrabold text-primary">{{ stats.applied }}</span>
+      </div>
+    </section>
+
+    <!-- Job feed -->
+    <section class="flex flex-col gap-6">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-bold">Latest Matches</h3>
+        <span class="text-on-surface-variant text-sm font-label">Sorted by match score</span>
+      </div>
+
+      {% if jobs %}
+        {% for job in jobs %}
+        <article id="card-{{ loop.index }}" class="bg-[#1c1f29] rounded-2xl p-6 transition-all duration-300 hover:bg-[#272a34] hover:shadow-[0_0_25px_rgba(148,125,255,0.08)] border border-transparent hover:border-primary/20">
+          <div class="flex justify-between items-start mb-4">
+            <div class="flex-grow">
+              <a href="{{ job.jobs.url if job.jobs else job.url }}" target="_blank"
+                 class="text-xl font-bold text-[#f1f5f9] hover:text-primary transition-colors block mb-1">
+                {{ job.jobs.title if job.jobs else job.title }}
+              </a>
+              <div class="flex items-center gap-2 text-on-surface-variant font-label text-sm">
+                <span>{{ job.jobs.company if job.jobs else job.company }}</span>
+                <span class="h-1 w-1 rounded-full bg-outline-variant"></span>
+                <span>{{ job.jobs.location if job.jobs else job.location }}</span>
+              </div>
+            </div>
+            <div class="text-right ml-4">
+              <div class="text-secondary font-extrabold text-lg">{{ job.match_pct }} Match</div>
+              <div class="text-on-surface-variant text-xs mt-1">
+                {% if job.jobs and job.jobs.closing_date %}Closes: {{ job.jobs.closing_date }}{% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Badge -->
+          <div class="flex flex-wrap gap-2 mb-5">
+            <span class="px-3 py-1 bg-primary-container/20 text-primary-container rounded-full text-[11px] font-label font-bold tracking-wide uppercase">
+              {{ job.job_type }}
+            </span>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center justify-between pt-4 border-t border-outline-variant/30">
+            <div class="flex items-center gap-3">
+              <a href="{{ job.jobs.apply_url if job.jobs else job.url }}" target="_blank"
+                 onclick="updateStatus('{{ job.jobs.url if job.jobs else job.url }}', 'applied', {{ loop.index }})"
+                 class="bg-primary text-on-primary-container px-6 py-2.5 rounded-full font-bold text-sm transition-transform active:scale-95 shadow-lg">
+                Apply Now
+              </a>
+              <button onclick="updateStatus('{{ job.jobs.url if job.jobs else job.url }}', 'saved', {{ loop.index }})"
+                class="border border-outline-variant text-on-surface px-6 py-2.5 rounded-full font-bold text-sm hover:bg-surface-variant/30 transition-all">
+                Save for Later
+              </button>
+            </div>
+            <button onclick="updateStatus('{{ job.jobs.url if job.jobs else job.url }}', 'skipped', {{ loop.index }})"
+              class="text-on-surface-variant hover:text-error transition-colors px-4 py-2 text-sm font-bold flex items-center gap-1">
+              <span class="material-symbols-outlined text-lg">close</span> Skip
+            </button>
+          </div>
+        </article>
+        {% endfor %}
+
+      {% else %}
+        <div class="text-center py-20 text-on-surface-variant">
+          <span class="material-symbols-outlined text-5xl mb-4 block">search_off</span>
+          <p class="text-lg font-semibold mb-2">No new jobs right now</p>
+          <p class="text-sm">Click "Refresh Feed" to run the scraper and fetch today's listings.</p>
+        </div>
+      {% endif %}
+    </section>
+    <div class="h-24"></div>
+  </div>
+</main>
+
+<script>
+async function updateStatus(url, status, index) {
+  await fetch('/update-status', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url, status })
+  });
+  const card = document.getElementById('card-' + index);
+  if (card) {
+    card.style.transition = 'opacity 0.3s, transform 0.3s';
+    card.style.opacity = '0';
+    card.style.transform = 'translateX(20px)';
+    setTimeout(() => card.remove(), 300);
+  }
+}
+</script>
 </body>
-</html>
+</html>html>

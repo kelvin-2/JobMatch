@@ -1,10 +1,74 @@
+<!-- ==================== saved.html ==================== -->
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Saved — JobMatch</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"primary-container":"#947dff","outline-variant":"#484555","on-surface-variant":"#c9c4d8","surface-container":"#1c1f29","surface-container-high":"#272a34","on-surface":"#e0e2f0","primary":"#cabeff","outline":"#938ea1","secondary":"#4ae176","error":"#ffb4ab","surface-variant":"#31343f","tertiary-container":"#ff5451"},fontFamily:{"headline":["Plus Jakarta Sans"],"label":["Inter"]}}}}</script>
+<style>body{background-color:#10131d;font-family:'Plus Jakarta Sans',sans-serif;}.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}.custom-scrollbar::-webkit-scrollbar{width:4px;}.custom-scrollbar::-webkit-scrollbar-thumb{background:#31343f;border-radius:10px;}</style>
 </head>
-<body>
-
-</body>
-</html>
+<body class="text-on-surface antialiased">
+{% set active = 'saved' %}
+{% include '_sidebar.html' %}
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 bg-[#10131d]/80 backdrop-blur-xl h-20 flex items-center px-8">
+  <h2 class="text-lg font-semibold">Saved Jobs</h2>
+</header>
+<main class="ml-64 pt-20 h-screen overflow-y-auto custom-scrollbar">
+  <div class="max-w-4xl mx-auto p-8">
+    <div class="flex items-center gap-3 mb-8">
+      <h1 class="text-2xl font-bold">Saved</h1>
+      <span class="px-3 py-1 bg-primary-container/20 text-primary-container rounded-full text-xs font-bold">{{ jobs|length }} jobs</span>
+    </div>
+    {% if jobs %}
+      <div class="flex flex-col gap-4">
+        {% for job in jobs %}
+        <article id="saved-{{ loop.index }}" class="bg-[#1c1f29] rounded-2xl p-6 transition-all hover:bg-[#272a34] border border-transparent hover:border-primary/20">
+          <div class="flex justify-between items-start mb-3">
+            <div class="flex-grow">
+              <a href="{{ job.jobs.url if job.jobs else job.url }}" target="_blank"
+                 class="text-lg font-bold text-[#f1f5f9] hover:text-primary transition-colors block mb-1">
+                {{ job.jobs.title if job.jobs else job.title }}
+              </a>
+              <div class="flex items-center gap-2 text-on-surface-variant text-sm">
+                <span>{{ job.jobs.company if job.jobs else job.company }}</span>
+                <span class="h-1 w-1 rounded-full bg-outline-variant"></span>
+                <span>{{ job.jobs.location if job.jobs else job.location }}</span>
+              </div>
+            </div>
+            <div class="text-secondary font-bold ml-4">{{ job.match_pct }} Match</div>
+          </div>
+          <span class="px-3 py-1 bg-primary-container/20 text-primary-container rounded-full text-[11px] font-bold uppercase">{{ job.job_type }}</span>
+          <div class="flex items-center gap-3 mt-4 pt-4 border-t border-outline-variant/30">
+            <a href="{{ job.jobs.apply_url if job.jobs else job.url }}" target="_blank"
+               onclick="updateStatus('{{ job.jobs.url if job.jobs else job.url }}', 'applied', {{ loop.index }})"
+               class="bg-primary text-[#1a1d27] px-5 py-2 rounded-full font-bold text-sm active:scale-95 transition-transform">
+              Apply Now
+            </a>
+            <button onclick="updateStatus('{{ job.jobs.url if job.jobs else job.url }}', 'skipped', {{ loop.index }})"
+              class="text-on-surface-variant hover:text-error text-sm font-bold flex items-center gap-1 transition-colors">
+              <span class="material-symbols-outlined text-base">close</span> Remove
+            </button>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center py-20 text-on-surface-variant">
+        <span class="material-symbols-outlined text-5xl mb-4 block">bookmark_border</span>
+        <p class="text-lg font-semibold mb-1">Nothing saved yet</p>
+        <p class="text-sm">Go find something worth keeping.</p>
+      </div>
+    {% endif %}
+  </div>
+</main>
+<script>
+async function updateStatus(url, status, index) {
+  await fetch('/update-status', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({url,status}) });
+  const card = document.getElementById('saved-' + index);
+  if (card) { card.style.opacity='0'; card.style.transition='opacity 0.3s'; setTimeout(()=>card.remove(),300); }
+}
+</script>
+</body></html>

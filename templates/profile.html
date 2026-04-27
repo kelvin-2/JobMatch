@@ -1,10 +1,212 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>My Profile — JobMatch</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"primary-container":"#947dff","outline-variant":"#484555","on-surface-variant":"#c9c4d8","surface-container":"#1c1f29","surface-container-high":"#272a34","on-surface":"#e0e2f0","primary":"#cabeff","secondary":"#4ae176"},fontFamily:{"headline":["Plus Jakarta Sans"],"label":["Inter"]}}}}</script>
+<style>
+body{background-color:#10131d;font-family:'Plus Jakarta Sans',sans-serif;}
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
+.custom-scrollbar::-webkit-scrollbar{width:4px;}
+.custom-scrollbar::-webkit-scrollbar-thumb{background:#31343f;border-radius:10px;}
+.field{width:100%;background:#10131d;border:1px solid #484555;color:#e0e2f0;padding:12px 16px;border-radius:12px;font-size:14px;outline:none;transition:border-color 0.2s;}
+.field:focus{border-color:#7c5cfc;}
+.pill{display:inline-flex;align-items:center;gap:6px;background:rgba(148,125,255,0.15);color:#cabeff;padding:4px 12px;border-radius:9999px;font-size:12px;font-weight:600;}
+.pill button{background:none;border:none;color:#cabeff;cursor:pointer;font-size:14px;line-height:1;padding:0;}
+.toggle{position:relative;display:inline-block;width:44px;height:24px;}
+.toggle input{opacity:0;width:0;height:0;}
+.slider{position:absolute;cursor:pointer;inset:0;background:#484555;border-radius:9999px;transition:0.3s;}
+.slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background:white;border-radius:50%;transition:0.3s;}
+input:checked + .slider{background:#7c5cfc;}
+input:checked + .slider:before{transform:translateX(20px);}
+</style>
 </head>
-<body>
+<body class="text-on-surface antialiased">
+{% set active = 'profile' %}
+{% include '_sidebar.html' %}
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 bg-[#10131d]/80 backdrop-blur-xl h-20 flex items-center px-8">
+  <h2 class="text-lg font-semibold">My Profile</h2>
+</header>
+<main class="ml-64 pt-20 h-screen overflow-y-auto custom-scrollbar">
+  <div class="max-w-2xl mx-auto p-8">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold mb-1">My Profile</h1>
+      <p class="text-on-surface-variant text-sm">This is what JobMatch uses to find your jobs.</p>
+    </div>
 
-</body>
-</html>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="mb-4 px-4 py-3 bg-secondary/10 border border-secondary/20 text-secondary rounded-xl text-sm">{{ messages[0] }}</div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" class="flex flex-col gap-6">
+
+      <!-- Personal Info -->
+      <div class="bg-[#1c1f29] rounded-2xl p-6">
+        <h3 class="font-bold mb-4 text-[#f1f5f9]">Personal Information</h3>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="col-span-2">
+            <label class="text-on-surface-variant text-xs font-label mb-1 block uppercase tracking-wider">Full Name</label>
+            <input class="field" type="text" name="name" value="{{ profile.name }}"/>
+          </div>
+          <div>
+            <label class="text-on-surface-variant text-xs font-label mb-1 block uppercase tracking-wider">University</label>
+            <input class="field" type="text" name="university" value="{{ profile.university }}"/>
+          </div>
+          <div>
+            <label class="text-on-surface-variant text-xs font-label mb-1 block uppercase tracking-wider">Degree</label>
+            <input class="field" type="text" name="degree" value="{{ profile.degree }}"/>
+          </div>
+          <div>
+            <label class="text-on-surface-variant text-xs font-label mb-1 block uppercase tracking-wider">Graduation Year</label>
+            <input class="field" type="number" name="graduation_year" value="{{ profile.graduation_year }}"/>
+          </div>
+          <div>
+            <label class="text-on-surface-variant text-xs font-label mb-1 block uppercase tracking-wider">Location</label>
+            <input class="field" type="text" name="location" value="{{ profile.location }}"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills -->
+      <div class="bg-[#1c1f29] rounded-2xl p-6">
+        <h3 class="font-bold mb-2 text-[#f1f5f9]">Your Skills</h3>
+        <p class="text-on-surface-variant text-xs mb-4">These are matched against job descriptions to calculate your score.</p>
+        <div id="skills-container" class="flex flex-wrap gap-2 mb-4">
+          {% for skill in profile.skills %}
+          <span class="pill" id="skill-{{ loop.index }}">
+            {{ skill }}
+            <button type="button" onclick="removeSkill('skill-{{ loop.index }}', '{{ skill }}')">×</button>
+          </span>
+          {% endfor %}
+        </div>
+        <input type="hidden" name="skills" id="skills-input" value="{{ profile.skills | join(', ') }}"/>
+        <div class="flex gap-2">
+          <input id="new-skill" class="field flex-1" type="text" placeholder="Add a skill..." onkeydown="if(event.key==='Enter'){event.preventDefault();addSkill();}"/>
+          <button type="button" onclick="addSkill()"
+            class="bg-[#7c5cfc] text-white px-5 py-2 rounded-xl font-bold text-sm hover:brightness-110 transition-all">Add</button>
+        </div>
+      </div>
+
+      <!-- Degree keywords -->
+      <div class="bg-[#1c1f29] rounded-2xl p-6">
+        <h3 class="font-bold mb-2 text-[#f1f5f9]">Degree Match Keywords</h3>
+        <p class="text-on-surface-variant text-xs mb-4">Job descriptions are scanned for these words to check field relevance.</p>
+        <div id="kw-container" class="flex flex-wrap gap-2 mb-4">
+          {% for kw in profile.degree_keywords %}
+          <span class="pill" id="kw-{{ loop.index }}">
+            {{ kw }}
+            <button type="button" onclick="removeKw('kw-{{ loop.index }}', '{{ kw }}')">×</button>
+          </span>
+          {% endfor %}
+        </div>
+        <input type="hidden" name="degree_keywords" id="kw-input" value="{{ profile.degree_keywords | join(', ') }}"/>
+        <div class="flex gap-2">
+          <input id="new-kw" class="field flex-1" type="text" placeholder="Add a keyword..." onkeydown="if(event.key==='Enter'){event.preventDefault();addKw();}"/>
+          <button type="button" onclick="addKw()"
+            class="bg-[#7c5cfc] text-white px-5 py-2 rounded-xl font-bold text-sm hover:brightness-110 transition-all">Add</button>
+        </div>
+      </div>
+
+      <!-- Preferences -->
+      <div class="bg-[#1c1f29] rounded-2xl p-6">
+        <h3 class="font-bold mb-4 text-[#f1f5f9]">Job Preferences</h3>
+        <div class="flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="font-medium text-sm">Accept Remote Jobs</p>
+              <p class="text-on-surface-variant text-xs">Include fully remote positions</p>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" name="accept_remote" {% if profile.accept_remote %}checked{% endif %}/>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="font-medium text-sm">Accept Internships</p>
+              <p class="text-on-surface-variant text-xs">Include internship programmes</p>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" name="accept_internships" {% if profile.accept_internships %}checked{% endif %}/>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="font-medium text-sm">Accept Learnerships</p>
+              <p class="text-on-surface-variant text-xs">Include learnership programmes</p>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" name="accept_learnerships" {% if profile.accept_learnerships %}checked{% endif %}/>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Save button -->
+      <button type="submit"
+        class="w-full bg-[#7c5cfc] text-white py-4 rounded-2xl font-bold text-sm tracking-wide shadow-[0_4px_20px_rgba(124,92,252,0.25)] hover:brightness-110 active:scale-[0.99] transition-all">
+        Save Profile
+      </button>
+      <p class="text-center text-on-surface-variant text-xs -mt-2">Changes apply on the next scrape.</p>
+    </form>
+    <div class="h-16"></div>
+  </div>
+</main>
+
+<script>
+// Skills
+let skills = {{ profile.skills | tojson }};
+function updateSkillsInput() {
+  document.getElementById('skills-input').value = skills.join(', ');
+}
+function addSkill() {
+  const input = document.getElementById('new-skill');
+  const val = input.value.trim().toLowerCase();
+  if (!val || skills.includes(val)) return;
+  skills.push(val);
+  const id = 'skill-dyn-' + Date.now();
+  const el = document.createElement('span');
+  el.className = 'pill'; el.id = id;
+  el.innerHTML = `${val} <button type="button" onclick="removeSkill('${id}', '${val}')">×</button>`;
+  document.getElementById('skills-container').appendChild(el);
+  updateSkillsInput();
+  input.value = '';
+}
+function removeSkill(id, val) {
+  skills = skills.filter(s => s !== val);
+  document.getElementById(id)?.remove();
+  updateSkillsInput();
+}
+
+// Keywords
+let keywords = {{ profile.degree_keywords | tojson }};
+function updateKwInput() {
+  document.getElementById('kw-input').value = keywords.join(', ');
+}
+function addKw() {
+  const input = document.getElementById('new-kw');
+  const val = input.value.trim().toLowerCase();
+  if (!val || keywords.includes(val)) return;
+  keywords.push(val);
+  const id = 'kw-dyn-' + Date.now();
+  const el = document.createElement('span');
+  el.className = 'pill'; el.id = id;
+  el.innerHTML = `${val} <button type="button" onclick="removeKw('${id}', '${val}')">×</button>`;
+  document.getElementById('kw-container').appendChild(el);
+  updateKwInput();
+  input.value = '';
+}
+function removeKw(id, val) {
+  keywords = keywords.filter(k => k !== val);
+  document.getElementById(id)?.remove();
+  updateKwInput();
+}
+</script>
+</body></html>

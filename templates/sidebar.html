@@ -1,0 +1,45 @@
+<!-- Shared sidebar — included in all templates -->
+<aside class="h-screen w-64 flex-col fixed left-0 top-0 bg-[#181b25] shadow-[0px_20px_40px_rgba(0,0,0,0.4)] flex z-50">
+  <div class="flex flex-col gap-2 p-6 flex-grow">
+    <div class="mb-8">
+      <h1 class="text-2xl font-extrabold tracking-tighter text-[#f1f5f9]">JobMatch</h1>
+      <p class="text-slate-400 text-[10px] uppercase tracking-widest font-bold">Mudzingwa</p>
+    </div>
+    <nav class="flex flex-col gap-1">
+      <a href="{{ url_for('dashboard') }}"
+         class="{% if active == 'dashboard' %}bg-[#31343f] text-[#7c5cfc] shadow-[0_0_20px_rgba(124,92,252,0.15)]{% else %}text-slate-400 hover:text-slate-200 hover:bg-[#31343f]/50{% endif %} rounded-full px-4 py-3 flex items-center gap-3 transition-all duration-200">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span class="text-sm font-medium">Dashboard</span>
+      </a>
+      <a href="{{ url_for('saved') }}"
+         class="{% if active == 'saved' %}bg-[#31343f] text-[#7c5cfc] shadow-[0_0_20px_rgba(124,92,252,0.15)]{% else %}text-slate-400 hover:text-slate-200 hover:bg-[#31343f]/50{% endif %} rounded-full px-4 py-3 flex items-center gap-3 transition-all duration-200">
+        <span class="material-symbols-outlined">bookmark</span>
+        <span class="text-sm font-medium">Saved</span>
+      </a>
+      <a href="{{ url_for('tracker') }}"
+         class="{% if active == 'tracker' %}bg-[#31343f] text-[#7c5cfc] shadow-[0_0_20px_rgba(124,92,252,0.15)]{% else %}text-slate-400 hover:text-slate-200 hover:bg-[#31343f]/50{% endif %} rounded-full px-4 py-3 flex items-center gap-3 transition-all duration-200">
+        <span class="material-symbols-outlined">send</span>
+        <span class="text-sm font-medium">Applied</span>
+      </a>
+      <a href="{{ url_for('cv') }}"
+         class="{% if active == 'cv' %}bg-[#31343f] text-[#7c5cfc] shadow-[0_0_20px_rgba(124,92,252,0.15)]{% else %}text-slate-400 hover:text-slate-200 hover:bg-[#31343f]/50{% endif %} rounded-full px-4 py-3 flex items-center gap-3 transition-all duration-200">
+        <span class="material-symbols-outlined">description</span>
+        <span class="text-sm font-medium">My CV</span>
+      </a>
+      <a href="{{ url_for('profile') }}"
+         class="{% if active == 'profile' %}bg-[#31343f] text-[#7c5cfc] shadow-[0_0_20px_rgba(124,92,252,0.15)]{% else %}text-slate-400 hover:text-slate-200 hover:bg-[#31343f]/50{% endif %} rounded-full px-4 py-3 flex items-center gap-3 transition-all duration-200">
+        <span class="material-symbols-outlined">person</span>
+        <span class="text-sm font-medium">My Profile</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- Bottom logout -->
+  <div class="p-6 mt-auto">
+    <a href="{{ url_for('logout') }}"
+       class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-red-400 hover:bg-[#31343f]/50 rounded-full transition-all text-sm font-medium">
+      <span class="material-symbols-outlined">logout</span>
+      Sign out
+    </a>
+  </div>
+</aside>

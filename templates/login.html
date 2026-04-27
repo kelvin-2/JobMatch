@@ -1,10 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login — JobMatch</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary-container": "#947dff",
+          "outline-variant": "#484555",
+          "on-surface-variant": "#c9c4d8",
+          "surface-container": "#1c1f29",
+          "on-surface": "#e0e2f0",
+          "primary": "#cabeff",
+          "outline": "#938ea1",
+          "secondary": "#4ae176",
+        },
+        fontFamily: {
+          "headline": ["Plus Jakarta Sans"],
+          "label": ["Inter"]
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { background-color: #0f1117; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .glow-card { box-shadow: 0 0 40px rgba(124, 92, 252, 0.08); background-color: #1a1d27; }
+  .primary-button { background-color: #7c5cfc; }
+  .purple-dot-glow { box-shadow: 0 0 12px #7c5cfc; }
+</style>
 </head>
-<body>
+<body class="flex items-center justify-center min-h-screen p-6">
+<div class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#7c5cfc]/10 blur-[120px] rounded-full pointer-events-none"></div>
+<div class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#4ae176]/5 blur-[120px] rounded-full pointer-events-none"></div>
 
+<main class="relative z-10 w-full max-w-[420px]">
+  <div class="glow-card rounded-2xl p-10 flex flex-col items-center">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-3 mb-2">
+      <div class="w-2.5 h-2.5 bg-[#7c5cfc] rounded-full purple-dot-glow"></div>
+      <span class="text-[#f1f5f9] font-headline font-extrabold text-2xl tracking-tighter">JobMatch</span>
+    </div>
+    <!-- Personal tag -->
+    <p class="text-[#7c5cfc] text-sm font-semibold tracking-widest mb-8">Mudzingwa</p>
+
+    <div class="text-center mb-8 space-y-1">
+      <h1 class="text-[#f1f5f9] text-xl font-bold">Welcome back</h1>
+      <p class="text-[#94a3b8] font-label text-sm">Hey Kelvin, let's find you a job today.</p>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <p class="text-red-400 text-sm mb-4 text-center">{{ messages[0] }}</p>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" class="w-full space-y-4">
+      <div class="relative group">
+        <input
+          class="w-full bg-[#10131d] border-none text-[#f1f5f9] font-label text-sm py-4 px-5 rounded-xl focus:ring-1 focus:ring-[#7c5cfc] transition-all duration-300 placeholder:text-[#484555] outline-none"
+          placeholder="Enter password"
+          type="password"
+          name="password"
+          autofocus
+        />
+      </div>
+      <button
+        class="primary-button w-full py-4 rounded-xl text-white font-headline font-bold text-sm tracking-wide shadow-[0_4px_20px_rgba(124,92,252,0.2)] active:scale-95 transition-transform duration-200"
+        type="submit">
+        Login to Dashboard
+      </button>
+    </form>
+
+  </div>
+</main>
 </body>
 </html>
