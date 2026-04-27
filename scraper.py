@@ -149,8 +149,8 @@ def parse_job(driver, url: str, job_type: str) -> dict | None:
         "location":     location,
         "salary":       "",
         "closing_date": closing_date,
-        "requirements": description[:1000],
-        "description":  description[:3000],
+        "requirements": description[:4000],
+        "description":  description[:9000],
         "url":          url,
         "apply_url":    apply_url,
         "job_type":     type_labels.get(job_type, "Entry Level"),
@@ -184,3 +184,42 @@ def scrape_all(max_pages: int = 3) -> list[dict]:
 
     print(f"\nScraping complete. {len(all_jobs)} jobs found.")
     return all_jobs
+
+def scrape_page(driver, category: str, page: int, seen_urls: set) -> list[dict]:
+    """Scrape a single category page, parse each job, return list of job dicts."""
+    jobs = []
+    url = f"{BASE_URL}/jobs?view={category}&page={page}"
+    print(f"[Scraper] {category} — page {page}...")
+
+    driver.get(url)
+    try:
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "g24-job-card"))
+        )
+    except Exception:
+        print(f"[Scraper] No job cards on page {page} — stopping category.")
+        return []
+
+    soup = BeautifulSoup(driver.page_source, "lxml")
+    cards = soup.select("div.g24-job-card")
+    if not cards:
+        return []
+
+    for card in cards:
+        a = card.select_one("a.g24-card-link")
+        if not a or not a.get("href"):
+            continue
+        href = str(a["href"])
+        full_url = href if href.startswith("http") else BASE_URL + href
+        if full_url in seen_urls:
+            continue
+        seen_urls.add(full_url)
+
+        job = parse_job(driver, full_url, category)
+        if job:
+            jobs.append(job)
+            print(f"  ✓ {job['title']} — {job['company']}")
+
+        time.sleep(random.uniform(1, 2))
+
+    return jobs

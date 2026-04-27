@@ -1,5 +1,5 @@
 {
-  "name": "Kelvin Mudzingwa",
+  "name": "john",
   "university": "Nelson Mandela University",
   "degree": "BSc Computer Science and Statistics",
   "graduation_year": 2025,
@@ -7,26 +7,55 @@
   "accept_remote": true,
   "accept_internships": true,
   "accept_learnerships": true,
-  "min_match_score": 0.25,
+  "min_match_score": 0.40,
   "skills": [
-    "python", "excel", "sql", "data analysis",
-    "statistics", "r", "Java", "C#",
-    "ms office", "HTML", "CSS", "react" ,"node.js","supabase"
+    "python", "java", "c#", "javascript",
+    "html", "css", "tailwind", "react", "vite", "node.js",
+    "sql", "supabase", "r",
+    "data analysis", "statistics", "excel", "ms office",
+    "linux", "git","github"
   ],
   "degree_keywords": [
     "bsc", "computer science", "statistics", "stats",
     "data science", "data analysis", "machine learning",
     "software", "it", "technology", "programming", "mathematics"
   ],
+  "required_field_keywords": [
+    "software", "developer", "programming", "coding", "computer science",
+    "systems", "application", "backend", "frontend", "full stack",
+    "web development", "mobile development", "IT", "information technology",
+    "cloud", "DevOps", "database", "SQL", "API", "machine learning", "AI",
+    "artificial intelligence", "data structures", "algorithms",
+    "data analyst", "data science", "data engineer", "business intelligence",
+    "statistics", "statistical", "analytics", "reporting", "Power BI",
+    "Tableau", "R programming", "Python", "data modelling", "quantitative",
+    "cybersecurity", "cyber security", "information security", "infosec",
+    "penetration testing", "pentesting", "ethical hacking", "SOC",
+    "security analyst", "network security", "vulnerability", "SIEM",
+    "incident response", "threat", "firewall", "encryption", "compliance",
+    "risk assessment", "security operations", "blue team", "red team",
+    "OSINT", "malware analysis", "digital forensics"
+  ],
+  "blocked_job_titles": [
+    "clerk", "cashier", "driver", "cleaner", "security guard",
+    "receptionist", "waiter", "waitress", "sales assistant", "store assistant",
+    "picker", "packer", "admin assistant", "call centre agent", "call center",
+    "domestic", "general worker", "labourer", "teller", "shelf packer",
+    "merchandiser", "forklift", "warehouse", "delivery", "housekeeper",
+    "petrol attendant", "plumber", "electrician", "artisan", "mechanic",
+    "nursing", "caregiver", "social worker", "teacher", "educator"
+  ],
   "target_job_types": [
     "graduate programme", "graduate program", "entry level",
     "entry-level", "junior", "trainee", "internship",
     "learnership", "graduate trainee", "management trainee",
     "no experience required", "fresh graduate", "recent graduate",
-    "0-1 years", "0 to 1 year"
+    "0-1 years", "0 to 1 year", "junior developer", "junior analyst",
+    "junior security", "SOC analyst", "security graduate"
   ],
   "disqualifying_keywords": [
-    "5 years", "5+ years", "senior", "head of",
-    "director", "principal", "minimum 3 years", "minimum 5 years"
+    "5 years", "5+ years", "senior", "head of", "director",
+    "principal", "minimum 3 years", "minimum 5 years",
+    "CISSP required", "CISM required", "10 years"
   ]
 }
