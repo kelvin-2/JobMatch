@@ -2,7 +2,7 @@ services:
   - type: web
     name: jobmatch-kelvin
     runtime: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: apt-get install -y chromium-browser && pip install -r requirements.txt
     startCommand: python app.py
     envVars:
       - key: SECRET_KEY
